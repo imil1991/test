@@ -58,6 +58,6 @@ class VariableLessonsTariffEntity implements LessonTariffInterface
      */
     public function getPrice() : int
     {
-        return $this->hoursCount * $this->defaultPrice;
+        return $this->getHoursCount() * $this->getDefaultPrice();
     }
 }

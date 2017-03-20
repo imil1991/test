@@ -13,7 +13,7 @@ class LessonEntity
     const GRAMMAR_TYPE = 'Grammar';
     const SPEAKING_TYPE = 'Speaking';
     /**
-     * @var string
+     * @var LessonTypeInterface
      */
     private $type;
 
@@ -29,23 +29,26 @@ class LessonEntity
     public function __construct(LessonTariffInterface $lessonTariff)
     {
         $this->tariff = $lessonTariff;
+        $this->type = new GrammarTypeLesson();
     }
 
 
     /**
-     * @return string
+     * @return LessonTypeInterface
      */
-    public function getType(): string
+    public function getType() : LessonTypeInterface
     {
         return $this->type;
     }
 
     /**
-     * @param string $type
+     * @param $type
+     * @return $this
      */
-    public function setType(string $type)
+    public function setType(LessonTypeInterface $type)
     {
         $this->type = $type;
+        return $this;
     }
 
      /**
@@ -56,20 +59,11 @@ class LessonEntity
         return $this->tariff;
     }
 
-    /**
-     * @return array
-     */
-    public function getAllTypes() : array
+
+    public function getPrice() : int
     {
-        return [self::GRAMMAR_TYPE, self::SPEAKING_TYPE];
+        return  $this->getTariff()->getPrice() - $this->getTariff()->getPrice() * $this->getType()->getDiscount()/100;
     }
 
-    /**
-     * @return bool
-     */
-    public function isValidType() : bool
-    {
-        return in_array($this->getType(), $this->getAllTypes(), true);
-    }
 
 }

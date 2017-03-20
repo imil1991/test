@@ -3,6 +3,10 @@ namespace Tests;
 use App\FixedLessonsTariffEntity;
 use App\LessonEntity;
 use App\LessonService;
+use App\LessonTariffInterface;
+use App\NewTariff;
+use App\NewTypeLesson;
+use App\SpeakingTypeLesson;
 use App\VariableLessonsTariffEntity;
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +31,6 @@ class LessonServiceTest extends TestCase
     {
         $lessonService = new LessonService();
         $lessonService->addLesson($this->createLessonByHours(1));
-        $lessonService->calculateLessonsPrice();
         self::assertEquals(100,$lessonService->calculateLessonsPrice());
     }
 
@@ -36,7 +39,6 @@ class LessonServiceTest extends TestCase
         $lessonService = new LessonService();
         $lessonService->addLesson($this->createLessonByHours(1));
         $lessonService->addLesson($this->createLessonByHours(1));
-        $lessonService->calculateLessonsPrice();
         self::assertEquals(200,$lessonService->calculateLessonsPrice());
     }
 
@@ -46,8 +48,34 @@ class LessonServiceTest extends TestCase
         $lessonService->addLesson($this->createLessonByHours(1));
         $lessonService->addLesson($this->createLessonByHours(1));
         $lessonService->addLesson($this->createFixedLesson());
-        $lessonService->calculateLessonsPrice();
         self::assertEquals(400,$lessonService->calculateLessonsPrice());
+    }
+
+    public function test_calculateLessonsCost_withNewTariff_shouldReturn300()
+    {
+        $lessonService = new LessonService();
+        $lessonService->addLesson($this->createLessonWithNewTariff());
+        self::assertEquals(300,$lessonService->calculateLessonsPrice());
+    }
+
+    public function test_calculateLessonsCost_withOneLessonOneHourTariffSpeakingType_shouldReturn90()
+    {
+        $lessonService = new LessonService();
+        $lesson = new LessonEntity(
+            new VariableLessonsTariffEntity(1)
+        );
+        $lessonService->addLesson($lesson->setType(new SpeakingTypeLesson()));
+        self::assertEquals(90, $lessonService->calculateLessonsPrice());
+    }
+
+    public function test_calculateLessonsCost_withOneLessonOneHourTariffNewType_shouldReturn80()
+    {
+        $lessonService = new LessonService();
+        $lesson = new LessonEntity(
+            new VariableLessonsTariffEntity(1)
+        );
+        $lessonService->addLesson($lesson->setType(new NewTypeLesson()));
+        self::assertEquals(80, $lessonService->calculateLessonsPrice());
     }
 
     /**
@@ -58,6 +86,13 @@ class LessonServiceTest extends TestCase
     {
         return new LessonEntity(
             new VariableLessonsTariffEntity($hours)
+        );
+    }
+
+    private function createLessonWithNewTariff()
+    {
+        return new LessonEntity(
+            new NewTariff()
         );
     }
     /**

@@ -27,12 +27,10 @@ class LessonService
         $this->lessonCollection->add($lesson);
     }
 
-    public function delLesson(LessonEntity $lesson)
-    {
-        if($this->lessonCollection->contains($lesson))
-            $this->lessonCollection->remove($lesson);
-    }
-
+    /**
+     * @return int
+     * @throws \Exception
+     */
     public function calculateLessonsPrice()
     {
         if($this->lessonCollection->isEmpty()){
@@ -41,7 +39,7 @@ class LessonService
 
         $result = 0;
         foreach ($this->lessonCollection as $row){
-            $result += $row->getTariff()->getPrice();
+            $result += $row->getPrice();
         }
 
         return $result;
